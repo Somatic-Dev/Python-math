@@ -1,6 +1,6 @@
-# Python Linear Algebra for MATLAB-like Computing
+# Python Linear Algebra for MATLAB-like Computing 
 
-This workspace is configured for linear algebra projects using Python with MATLAB-comparable functionality.
+This workspace is configured for linear algebra projects using Python with MATLAB-comparable functionality. Examples for me to work off of in Linear algebra if I get stuck creating the python.
 
 ## Setup Complete ✓
 
@@ -146,5 +146,3 @@ d:\Assignments\2270\Python math\
 ```
 
 ---
-
-You're all set! Start creating your linear algebra projects with Python.
