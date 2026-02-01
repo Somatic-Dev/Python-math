@@ -110,7 +110,98 @@ A = Matrix([[-3, -5, 36, 10],
 
 print_rref_and_equations(A, "A", var_names=['x', 'y', 'z'])
 
+
+
 # Lab 1
+#  A=[■(1&1&1@1&2&3@4&5&6)] , B=[■(3@2@4)],   C=[■(0@1@1)]  ,  D=[■(2&1&3)] , E=[■(7&8&9)] 
+
+A = np.array([[1, 1, 1],
+              [1, 2, 3],
+              [4, 5, 6]], dtype=float); 
+B = np.array([[3],
+              [2],
+              [4]], dtype=float);
+C = np.array([[0],
+              [1],
+              [1]], dtype=float);
+D = np.array([[2, 1, 3]], dtype=float);
+E = np.array([[7, 8, 9]], dtype=float);
+M = np.array([[1,3,6,2],
+              [0,1,4,5],
+              [0,0,2,6]], dtype=float);
+N = np.array([[1, 0, 0, 2, 1, 3],
+              [0, 1, 0, 0, 4, 1],
+              [0, 0, 1, 2, 3, 9]], dtype=float);
+
+
+print("\n1. i")
+
+hStackedAB = np.hstack((A, B))  # Augmented matrix [A|B]
+print("Augmented matrix [A,B]:\n", hStackedAB)
+
+print("\n1. ii")
+hStackedBC = np.hstack((B, C))  # Augmented matrix [B|C]
+print("Augmented matrix [B,C]:\n", hStackedBC)
+print("\n1. iii")
+HstackedDE = np.hstack((D, E))  # Augmented matrix [D|E]
+print("Augmented matrix [D,E]:\n", HstackedDE)
+
+print("\n1. iv")
+VStackedBC   = np.vstack((B, C))  # Augmented matrix [B;C]
+print("Augmented matrix [B;C]:\n", VStackedBC)
+
+print("\n1. v")
+VStackedAD = np.vstack((A, D))  # Augmented matrix [A;D]
+print("Augmented matrix [A;D]:\n", VStackedAD)
+
+print("\n1. vi")
+VStackedDE = np.vstack((D, E))  # Augmented matrix [D;E]
+print("Augmented matrix [D;E]:\n", VStackedDE)
+
+print("\n2. i")
+A_transpose = A.T
+print("Transpose of A:\n", A_transpose)
+
+print("\n2. ii")
+B_transpose = B.T
+print("Transpose of B:\n", B_transpose)
+
+print("\n2. iii")
+HStackedCE_transpose = np.hstack((C, E.T))
+print("Transpose of E then HStack [C,E]:\n", HStackedCE_transpose)
+
+print("\n2. iv")
+HStackedCD_Transpose = np.hstack((C.T, D)) 
+print("Transpose of C then HStack [C,D]:\n", HStackedCD_Transpose)
+
+print("\n4. i")
+AChangerow3column2 = A.copy()
+AChangerow3column2[1, 2] = 9
+print("Modified A (row 2, column 3 set to 9):\n", AChangerow3column2)
+
+print("\n4. ii")
+AChangeRow3 = A.copy()
+AChangeRow3[2,:] = [1, 2, 4]
+print("Modified A (row 3 set to [1,2,4]):\n", AChangeRow3)
+
+print("\n4. iii")
+AChangeRow1 = A.copy()
+AChangeRow1[:, 0] = [1, 1, 1]
+print("Modified A (Row 1 set to [1,1,1]):\n", AChangeRow1)
+
+print("\n5. i")
+submatrix_M_3x3 = M[0:3, 0:3]
+print("Submatrix of M M1 (3x3):\n", submatrix_M_3x3)
+print("\n5. ii")
+submatrix_M_1x1 = M[0:3, 3:4]
+print("Submatrix of M M2:\n", submatrix_M_1x1)
+print("\n5. iii")
+submatrix_N_3x3 = N[0:3, 0:3]
+print("Submatrix of N N1:\n", submatrix_N_3x3)
+print("\n5. iv")
+submatrix_N_3x3x2 = N[0:3, 3:6]
+print("Submatrix of N N2:\n", submatrix_N_3x3x2)
+
 
 
 # Lab 2
