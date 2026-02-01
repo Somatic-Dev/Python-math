@@ -1,15 +1,49 @@
 # MATLAB-like Python environment imports
-import numpy as np
-from numpy.linalg import matrix_rank, solve, lstsq
-from scipy import linalg
-from scipy.linalg import eig, svd, qr, lu
 import matplotlib.pyplot as plt
-from sympy import Matrix, symbols, solve as sym_solve, simplify, factor, expand, pprint
+from sympy import Matrix, symbols, solve as sym_solve, simplify, factor, expand, pprint, pretty
 from sympy.matrices import eye, zeros, ones, diag
 
 # ============================================
 # Helper Functions
 # ============================================
+
+def print_matrix_equation(A, x, b):
+    """Print matrices side by side: A * x = b using pretty print format"""
+    # Get pretty string representations
+    A_str = pretty(A).split('\n')
+    x_str = pretty(x).split('\n')
+    b_str = pretty(b).split('\n')
+    
+    # Find max heights and pad shorter ones
+    max_height = max(len(A_str), len(x_str), len(b_str))
+    
+    def pad_to_height(lines, height):
+        width = max(len(line) for line in lines) if lines else 0
+        padding_top = (height - len(lines)) // 2
+        padding_bottom = height - len(lines) - padding_top
+        empty_line = ' ' * width
+        return [empty_line] * padding_top + lines + [empty_line] * padding_bottom
+    
+    A_str = pad_to_height(A_str, max_height)
+    x_str = pad_to_height(x_str, max_height)
+    b_str = pad_to_height(b_str, max_height)
+    
+    # Find widths for alignment
+    A_width = max(len(line) for line in A_str)
+    x_width = max(len(line) for line in x_str)
+    
+    # Find middle row for operators
+    mid = max_height // 2
+    
+    # Print each row
+    for i in range(max_height):
+        A_part = A_str[i].ljust(A_width)
+        x_part = x_str[i].ljust(x_width)
+        b_part = b_str[i]
+        mult = " * " if i == mid else "   "
+        equals = " = " if i == mid else "   "
+        print(f"{A_part}{mult}{x_part}{equals}{b_part}")
+    print()
 
 def format_val(x):
     """Convert to int if no decimal part, otherwise keep as float"""
@@ -70,9 +104,9 @@ def print_rref_and_equations(matrix_array, matrix_name="Matrix", var_names=None)
     print_equations(rref_matrix, var_names)
 
 # Example matrix
-A = np.array([[-3, -5, 36, 10],
-              [-1, 0, 7, -8],
-              [1, 1, -10, -4]], dtype=float)
+A = Matrix([[-3, -5, 36, 10],
+            [-1, 0, 7, -8],
+            [1, 1, -10, -4]])
 
 print_rref_and_equations(A, "A", var_names=['x', 'y', 'z'])
 
@@ -81,42 +115,125 @@ print_rref_and_equations(A, "A", var_names=['x', 'y', 'z'])
 
 # Lab 2
 print("\n\n========== PROBLEM 1 ==========")
-A2 = np.array([[1, -1, 3],
-               [2, 1, 3]])
+A2 = Matrix([[1, -1, 3],
+             [2, 1, 3]])
 print_rref_and_equations(A2, "A2", var_names=['x', 'y'])
 
 
 print("\n\nProblem 2:")
-B2 = np.array([[10, 15, 20],
-               [2, 3, 4]])
+B2 = Matrix([[10, 15, 20],
+             [2, 3, 4]])
 print_rref_and_equations(B2, "B2", var_names=['x', 'y'])
 
 print("\n\nProblem 3:")
-C2 = np.array([[-4, 6, 3],
-               [2, -3, -3]])
+C2 = Matrix([[-4, 6, 3],
+             [2, -3, -3]])
 print_rref_and_equations(C2, "C2", var_names=['x', 'y'])
 
 print("\n\nProblem 4:")
-D2 = np.array([[1,-1,-1,4],
-               [2,4,6,-6],
-               [1,3,-2,2]])
+D2 = Matrix([[1,-1,-1,4],
+             [2,4,6,-6],
+             [1,3,-2,2]])
 print_rref_and_equations(D2, "D2", var_names=['x', 'y', 'z'])
 
 print("\n\nProblem 5:")
-E2 = np.array([[1,-1,1,4],
-               [2,0,4,5],
-               [2,0,-4,-5]])
+E2 = Matrix([[1,-1,1,4],
+             [2,0,4,5],
+             [2,0,-4,-5]])
 print_rref_and_equations(E2, "E2", var_names=['x', 'y', 'z'])
 
 print("\n\nProblem 6:")
-F2 = np.array([[1,-1,2,5],
-               [2,1,0,1],
-               [1,8,-1,3],
-               [-1,-5,-12,41]])
+F2 = Matrix([[1,-1,2,5],
+             [2,1,0,1],
+             [1,8,-1,3],
+             [-1,-5,-12,41]])
 print_rref_and_equations(F2, "F2", var_names=['x1', 'x2', 'x3'])
 
 print("\n\nProblem 7:")
-G2 = np.array([[3,-1,1,2,-2],
-               [1,2,-1,1,1],
-               [-1,-3,2,-4,-6]])
+G2 = Matrix([[3,-1,1,2,-2],
+             [1,2,-1,1,1],
+             [-1,-3,2,-4,-6]])
 print_rref_and_equations(G2, "G2", var_names=['x1', 'x2', 'x3', 'x4'])
+
+# Lab 3
+
+
+def MatrixInverseRRefSolve(A, b):
+    """Solve Ax = B using the inverse matrix then RREF with inverse matrix"""
+   
+    print("\nUsing Inverse Matrix Method with identity matrix:\n")
+    print("MatrixForm: Ax = b\n")
+
+    # Create symbolic x vector
+    n = A.shape[1]
+    x = Matrix(symbols(f'x0:{n}'))
+    
+    # Print the system in nice matrix form (side by side)
+    print("System of equations in matrix form:\n")
+    print_matrix_equation(A, x, b)
+    
+    I = eye(A.shape[0]) # Identity matrix of size of A
+    aug = A.row_join(I)
+    print("\nAugmented Matrix [A | I]:\n")
+    pprint(aug)
+    rref_aug, _ = aug.rref()
+    print("\nRREF of [A | I]:\n")
+    pprint(rref_aug)
+    A_inv = rref_aug[:, A.shape[1]:]
+    print("\nInverse of A:\n")
+    pprint(A_inv)
+    x_inv = A_inv * b
+    print("\nSolution x using Inverse Matrix Method:\n")
+    pprint(x_inv)
+
+
+
+print("\nProblem 1:\n")
+A3_1 = Matrix([[1, -1],
+                [2, 1]])
+b3_1 = Matrix([[3],
+                [3]])
+MatrixInverseRRefSolve(A3_1, b3_1)
+
+print("\nProblem 2:\n")
+A3_2 = Matrix([[-4, -6],
+               [2, -3]])
+b3_2 = Matrix([[3],
+               [-3]])
+MatrixInverseRRefSolve(A3_2, b3_2)
+
+print("\nProblem 3:\n")
+A3_3 = Matrix([[1, -1],
+               [2, 4]])
+b3_3 = Matrix([[4],
+               [14]])
+MatrixInverseRRefSolve(A3_3, b3_3)
+
+print("\nProblem 4:\n")
+A3_4 = Matrix([[10, 15],
+               [2, 3]])
+b3_4 = Matrix([[20],
+               [4]])
+MatrixInverseRRefSolve(A3_4, b3_4)
+print_rref_and_equations(A3_4.row_join(b3_4), "Augmented A3_4", var_names=['x', 'y'])
+
+
+print("\nProblem 5:\n")
+A3_5 = Matrix([[1, -1, -1],
+               [2, 4, 6],
+               [1, 3, -2]])
+b3_5 = Matrix([[4],
+               [-6],
+               [2]])
+MatrixInverseRRefSolve(A3_5, b3_5)
+
+
+print("\nProblem 6:\n")
+A3_6 = Matrix([[1, -1, 1],
+               [2, 0, 4],
+               [-2, 0, -4]])
+b3_6 = Matrix([[4],
+               [5],
+               [-5]])
+MatrixInverseRRefSolve(A3_6, b3_6)
+print_rref_and_equations(A3_6.row_join(b3_6), "Augmented A3_6", var_names=['x', 'y', 'z'])
