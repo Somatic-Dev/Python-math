@@ -1,4 +1,5 @@
 # MATLAB-like Python environment imports
+import numpy as np
 import matplotlib.pyplot as plt
 from sympy import Matrix, symbols, solve as sym_solve, simplify, factor, expand, pprint, pretty
 from sympy.matrices import eye, zeros, ones, diag
@@ -328,3 +329,185 @@ b3_6 = Matrix([[4],
                [-5]])
 MatrixInverseRRefSolve(A3_6, b3_6)
 print_rref_and_equations(A3_6.row_join(b3_6), "Augmented A3_6", var_names=['x', 'y', 'z'])
+
+
+
+#Lab 4 
+print("\nProblem 1:\n")
+A4_1 = Matrix([[-1, -3],
+               [4, 5]])
+b4_1 = Matrix([[-2],
+               [8]])
+
+print("\nDeterminant of A:")
+pprint(A4_1.det())
+
+MatrixInverseRRefSolve(A4_1, b4_1)
+
+print("\nProblem 2:\n")
+A4_2 = Matrix([[1, 2, 3],
+               [2, 5, 3],
+               [1, 0, 8]])
+b4_2 = Matrix([[5],
+               [3],
+               [17]])
+
+print("\nDeterminant of A:")
+pprint(A4_2.det())
+MatrixInverseRRefSolve(A4_2, b4_2)
+
+
+print("\nProblem 3:\n")
+A4_3 = Matrix([[0, 3, 2],
+               [1, 2, 1],
+               [2, 1, 1]])
+
+print ("\nDeterminant of A:")
+pprint(A4_3.det())
+
+#swap row1 and row 2 of A and then calculate a new det
+A4_3_swapped = A4_3.copy()
+A4_3_swapped.row_swap(0, 1)
+print("\nDeterminant of A after swapping row 1 and row 2:")
+pprint(A4_3_swapped.det())
+
+#Multiply row 2 by 3 and compute new det
+A4_3_multiplied = A4_3.copy()
+A4_3_multiplied.row_op(1, lambda v, j: 3 * v)
+print("\nDeterminant of A after multiplying row 2 by 3:")
+pprint(A4_3_multiplied.det())
+
+
+#replace row 3 with -2 times row 2 plus row 3 and then calculate a new det
+A4_3_replaced = A4_3.copy()
+A4_3_replaced.row_op(2, lambda v, j: -2 * A4_3_replaced[1, j] + v)
+print("\nDeterminant of A after replacing row 3 with -2 times row 2 plus row 3:")
+pprint(A4_3_replaced.det())
+
+
+print("\nProblem 4:\n")
+A4_4 = Matrix([[2, 4, 6],
+               [2, 6, 9],
+               [3, 12, 5]])
+
+print("\nDeterminant of A:")
+pprint(A4_4.det())
+
+#perform row operations in succession
+A4_4_row_equivalent = A4_4.copy()
+
+#multiply row 1 by .5 compute new det
+A4_4_row_equivalent.row_op(0, lambda v, j: 0.5 * v)
+print("\nDeterminant of A after multiplying row 1 by 0.5:")
+pprint(A4_4_row_equivalent.det())
+
+#replace row 2 with -2 times row 1 plus row 2 and compute new det
+A4_4_row_equivalent.row_op(1, lambda v, j: -2 * A4_4_row_equivalent[0, j] + v)
+print("\nDeterminant of A after replacing row 2 with -2 times row 1 plus row 2:")
+pprint(A4_4_row_equivalent.det())
+
+#replace row 3 with -3 times row 1 plus row 3 and compute new det
+A4_4_row_equivalent.row_op(2, lambda v, j: -3 * A4_4_row_equivalent[0, j] + v)
+print("\nDeterminant of A after replacing row 3 with -3 times row 1 plus row 3:")
+pprint(A4_4_row_equivalent.det())
+
+# replace row 3 with -3 times row 2 plus row 3 and compute new det
+A4_4_row_equivalent.row_op(2, lambda v, j: -3 * A4_4_row_equivalent[1, j] + v)
+print("\nDeterminant of A after replacing row 3 with -3 times row 2 plus row 3:")
+pprint(A4_4_row_equivalent.det())
+
+print("\nRow equivalent matrix to A after performing all row operations:\n")
+pprint(A4_4_row_equivalent)
+
+#write equation that relates the 2 determinants together 
+print("\nThe determinant of the row equivalent matrix is related to the determinant of A by the following equation:")
+print("det(A4_4_row_equivalent) = (0.5) * det(A4_4)")
+
+print("\nProblem 5:\n")
+A4_5 = Matrix([[2, 6, 8],
+               [1, 2, 3],
+               [3, 0, 2]])
+
+#compute determinant of A
+print("\nDeterminant of A:")
+pprint(A4_5.det())
+
+#turn A into an upper triangular REF matrix using row operations and compute new determinant
+A4_5_ref = A4_5.copy()
+# at each step identify the relationship of the determinant of the current matrix with the original determinant of A
+A4_5_ref.row_op(1, lambda v, j: v - 0.5 * A4_5_ref[0, j])  # R2 - 0.5*R1
+print("\nDeterminant after R2 - 0.5*R1:")
+pprint(A4_5_ref.det())
+A4_5_ref.row_op(2, lambda v, j: v - 1.5 * A4_5_ref[0, j])  # R3 - 1.5*R1
+print("\nDeterminant after R3 - 1.5*R1:")
+pprint(A4_5_ref.det())
+A4_5_ref.row_op(2, lambda v, j: v - 0.5 * A4_5_ref[1, j])  # R3 - 0.5*R2
+print("\nDeterminant after R3 - 0.5*R2:")
+pprint(A4_5_ref.det())
+A4_5_ref.row_op(0, lambda v, j: 0.5 * v)  # 0.5*R1
+print("\nDeterminant after 0.5*R1:")
+pprint(A4_5_ref.det())
+A4_5_ref.row_op(1, lambda v, j: -1 * v)  # -1*R2
+print("\nDeterminant after -1*R2:")
+pprint(A4_5_ref.det())
+A4_5_ref.row_op(2, lambda v, j: v + 8.5 * A4_5_ref[1, j]) 
+print("\nDeterminant after R3 - 8.5*R2:")
+pprint(A4_5_ref.det())
+
+A4_5_ref.row_op(2, lambda v, j: -1 * v)  # -1*R3
+print("\nDeterminant after -1*R3:")
+pprint(A4_5_ref.det())
+
+pprint("\nUpper triangular REF of A:\n")
+pprint(A4_5_ref)
+
+print("\n problem 6:\n")
+A4_6 = Matrix([[1, -1, 2, 4],
+               [2, 1, 0, 3],
+               [1, 8, -1, -2],
+               [-1, -5, -12, 1]])
+b4_6 = Matrix([[-1],
+               [8],
+               [11],
+               [30]])
+
+print("\nDeterminant of A:")
+pprint(A4_6.det())
+
+#create the cramer's rule matrix for x1, x2, x3, x4 and compute the determinant of each printing them inbetween
+A4_6_x1 = A4_6.copy()
+A4_6_x1[:, 0] = b4_6
+pprint("\nMatrix for Cramer's rule to solve for x1 (column 1 replaced by b):\n")
+pprint(A4_6_x1)
+print("\nDeterminant of A with column 1 replaced by b:")
+pprint(A4_6_x1.det())
+
+A4_6_x2 = A4_6.copy()
+A4_6_x2[:, 1] = b4_6
+pprint("\nMatrix for Cramer's rule to solve for x2 (column 2 replaced by b):\n")
+pprint(A4_6_x2)
+print("\nDeterminant of A with column 2 replaced by b:")
+pprint(A4_6_x2.det())
+
+A4_6_x3 = A4_6.copy()
+A4_6_x3[:, 2] = b4_6
+pprint("\nMatrix for Cramer's rule to solve for x3 (column 3 replacedby b):\n")
+pprint(A4_6_x3)
+print("\nDeterminant of A with column 3 replaced by b:")
+pprint(A4_6_x3.det())
+
+A4_6_x4 = A4_6.copy()
+A4_6_x4[:, 3] = b4_6
+pprint("\nMatrix for Cramer's rule to solve for x4 (column 4 replaced by b):\n")
+pprint(A4_6_x4)
+print("\nDeterminant of A with column 4 replaced by b:")
+pprint(A4_6_x4.det())
+
+
+#solve for x1, x2, x3, x4 using Cramer's rule and print the solution
+x1 = A4_6_x1.det() / A4_6.det()
+x2 = A4_6_x2.det() / A4_6.det()
+x3 = A4_6_x3.det() / A4_6.det()
+x4 = A4_6_x4.det() / A4_6.det()
+print("\nSolution using Cramer's rule:")
+pprint(Matrix([[x1], [x2], [x3], [x4]])) 
