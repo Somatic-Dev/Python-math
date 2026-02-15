@@ -1,12 +1,65 @@
 # MATLAB-like Python environment imports
 import numpy as np
 import matplotlib.pyplot as plt
+import sympy as sp
 from sympy import Matrix, symbols, solve as sym_solve, simplify, factor, expand, pprint, pretty
 from sympy.matrices import eye, zeros, ones, diag
 
 # ============================================
 # Helper Functions
 # ============================================
+
+def plot_projection_2d(u_sym: Matrix, v_sym: Matrix, title="Vector Projection (2D)"):
+    """
+    u_sym, v_sym are SymPy column vectors of length 2.
+    Returns (proj_u_on_v, orthogonal_component) as SymPy Matrices.
+    """
+    if u_sym.shape != (2, 1) or v_sym.shape != (2, 1):
+        raise ValueError("u_sym and v_sym must be 2x1 SymPy column vectors.")
+    if v_sym.dot(v_sym) == 0:
+        raise ValueError("v_sym cannot be the zero vector.")
+
+    # SymPy exact math
+    proj = (u_sym.dot(v_sym) / v_sym.dot(v_sym)) * v_sym
+    orth = u_sym - proj
+
+    # Convert to numpy for plotting
+    u = np.array(u_sym.tolist(), dtype=float).flatten()
+    v = np.array(v_sym.tolist(), dtype=float).flatten()
+    p = np.array(proj.evalf().tolist(), dtype=float).flatten()
+    r = np.array(orth.evalf().tolist(), dtype=float).flatten()
+
+    fig, ax = plt.subplots(figsize=(6, 6))
+
+    # Axes/grid
+    ax.axhline(0, linewidth=1)
+    ax.axvline(0, linewidth=1)
+    ax.grid(True, alpha=0.3)
+    ax.set_aspect("equal", adjustable="box")
+
+    # Draw vectors from origin
+    ax.quiver(0, 0, u[0], u[1], angles="xy", scale_units="xy", scale=1, label="u")
+    ax.quiver(0, 0, v[0], v[1], angles="xy", scale_units="xy", scale=1, label="v", color='red')
+    ax.quiver(0, 0, p[0], p[1], angles="xy", scale_units="xy", scale=1, label="proj_u_on_v", color='blue')
+
+    # Orthogonal component from projection tip to u tip
+    ax.quiver(p[0], p[1], r[0], r[1], angles="xy", scale_units="xy", scale=1, label="u - proj", color='green')
+
+    # Dashed connector (same segment as orth component, just visually clear)
+    ax.plot([p[0], u[0]], [p[1], u[1]], linestyle="--", linewidth=1)
+
+    # Dynamic limits
+    all_pts = np.array([[0,0], u, v, p, u])
+    max_abs = max(1.0, np.max(np.abs(all_pts)))
+    lim = 1.25 * max_abs
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+
+    ax.set_title(title)
+    ax.legend()
+    plt.show()
+
+    return proj, orth
 
 def print_matrix_equation(A, x, b):
     """Print matrices side by side: A * x = b using pretty print format"""
@@ -511,3 +564,118 @@ x3 = A4_6_x3.det() / A4_6.det()
 x4 = A4_6_x4.det() / A4_6.det()
 print("\nSolution using Cramer's rule:")
 pprint(Matrix([[x1], [x2], [x3], [x4]])) 
+
+
+#lab 5
+
+v = Matrix([-4, -2, 8, 2])
+w = Matrix([10, 5, -20, -5])
+g = Matrix([-2, 2, -2, 2])
+h = Matrix([-1, 2, 4, -2, 1])
+x = Matrix([4, 7, -2])
+y = Matrix([3, 3, 8])
+z = Matrix([-2, 2, 5])
+
+#exercise 1
+#determine the norm and unit vector of v
+print("\nExercise 1:\n")
+v_norm = v.norm()
+print("Norm of v:")
+print(f"{float(v_norm):.2f}")
+v_unit = v / v_norm
+print("\nUnit vector of v:")
+pprint(v_unit.applyfunc(lambda e: round(float(e), 2)))
+
+#determine the norm and unit vector of h, x, g
+print("\nNorm and unit vector of h:")
+h_norm = h.norm()
+print(f"{float(h_norm):.2f}")
+h_unit = h / h_norm
+print("\nUnit vector of h:")
+pprint(h_unit.applyfunc(lambda e: round(float(e), 2)))
+
+print("\nNorm and unit vector of x:")
+x_norm = x.norm()
+print(f"{float(x_norm):.2f}")
+x_unit = x / x_norm
+print("\nUnit vector of x:")
+pprint(x_unit.applyfunc(lambda e: round(float(e), 2)))
+
+print("\nNorm and unit vector of g:")
+g_norm = g.norm()
+print(f"{float(g_norm):.2f}")
+g_unit = g / g_norm
+print("\nUnit vector of g:")
+pprint(g_unit.applyfunc(lambda e: round(float(e), 2)))
+
+
+#exercise 2
+print("\nExercise 2:\n")
+#compute the distance between w and v, x and y, x and z, w and g
+distance_w_v = (w - v).norm()
+print("Distance between w and v:")
+print(f"{float(distance_w_v):.2f}")
+distance_x_y = (x - y).norm()
+print("\nDistance between x and y:")
+print(f"{float(distance_x_y):.2f}")
+distance_x_z = (x - z).norm()
+print("\nDistance between x and z:")
+print(f"{float(distance_x_z):.2f}")
+distance_w_g = (w - g).norm()
+print("\nDistance between w and g:")
+print(f"{float(distance_w_g):.2f}")
+
+#exercise 3 
+print("\nExercise 3:\n")
+#compute the dot product of w and v, x and y, x and z, w and g
+dot_w_v = w.dot(v)
+print("Dot product of w and v:")
+print(f"{float(dot_w_v):.2f}")
+dot_x_y = x.dot(y)
+print("\nDot product of x and y:")
+print(f"{float(dot_x_y):.2f}")
+dot_x_z = x.dot(z)
+print("\nDot product of x and z:")
+print(f"{float(dot_x_z):.2f}")
+dot_w_g = w.dot(g)
+print("\nDot product of w and g:")
+print(f"{float(dot_w_g):.2f}")
+
+
+#exercise 4
+print("\nExercise 4:\n")
+#compute the angle between w and v, x and y, x and z, w and g
+angle_w_v = sp.acos(dot_w_v / (v.norm() * w.norm()))
+print("Angle between w and v (in radians):")
+print(f"{float(angle_w_v):.2f}")
+angle_x_y = sp.acos(dot_x_y / (x.norm() * y.norm()))
+print("\nAngle between x and y (in radians):")
+print(f"{float(angle_x_y):.2f}")
+angle_x_z = sp.acos(dot_x_z / (x.norm() * z.norm()))
+print("\nAngle between x and z (in radians):")
+print(f"{float(angle_x_z):.2f}")
+angle_w_g = sp.acos(dot_w_g / (w.norm() * g.norm()))
+print("\nAngle between w and g (in radians):")
+print(f"{float(angle_w_g):.2f}")
+
+#exercise 5
+print("\nExercise 5:\n")
+# create matplotlib vectors of the projection of u onto v for these 3 vectors
+u1 = Matrix([3, 5])
+v1 = Matrix([7, 2])
+
+u2 = Matrix([8, 5])
+v2 = Matrix([6, 2])
+
+u3 = Matrix([-3, -5])
+v3 = Matrix([7, 2])
+
+print("\nVisualization of Projection of u1 onto v1")
+
+proj_u1_on_v1, orth_u1 = plot_projection_2d(u1, v1, title="Projection of u1 onto v1")
+print("\nVisualization of Projection of u2 onto v2")
+proj_u2_on_v2, orth_u2 = plot_projection_2d(u2, v2, title="Projection of u2 onto v2")
+print("\nVisualization of Projection of u3 onto v3")
+proj_u3_on_v3, orth_u3 = plot_projection_2d(u3, v3, title="Projection of u3 onto v3")
+
+
